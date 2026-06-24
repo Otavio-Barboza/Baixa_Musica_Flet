@@ -1,0 +1,17 @@
+[project]
+name = "baixa-musica"
+version = "0.1.0"
+dependencies = [
+    "flet==0.28.3",
+    "yt-dlp==2026.3.17",
+    "certifi"
+]
+
+[tool.flet]
+org = "com.otavio"
+product = "Baixa Musica"
+company = "Otavio"
+copyright = "Copyright (C) 2026"
+
+[tool.flet.app]
+path = "."

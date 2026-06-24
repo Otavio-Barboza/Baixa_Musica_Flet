@@ -2,14 +2,17 @@ from pathlib import Path
 import yt_dlp
 import os
 
-BASE_DIR = Path(__file__).parent
-FFMPEG_PATH = BASE_DIR / "Assets" / "ffmpeg"
+def obter_ffmpeg():
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    FFMPEG_PATH = BASE_DIR / "ffmpeg"
+    return FFMPEG_PATH
+
 
 def baixar_via_ffmpeg(
     url: str, 
     pasta_destino: str = r"C:\Users\barbo\Music", 
     cookies: str | None = None
-):
+) -> str:
     """
         Baixa o áudio de um vídeo do YouTube em formato MP3.
         Usa client Android e valida o download para evitar falso sucesso.
@@ -36,7 +39,7 @@ def baixar_via_ffmpeg(
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
-        "ffmpeg_location": str(FFMPEG_PATH)
+        "ffmpeg_location": obter_ffmpeg()
     }
 
     if cookies and os.path.exists(cookies):
@@ -61,5 +64,3 @@ def baixar_via_ffmpeg(
         print("💡 Tente atualizar o yt-dlp: pip install -U yt-dlp")
     except Exception as e:
         print(f"\n⚠️ Erro inesperado: {e}")
-
-print(str(FFMPEG_PATH))

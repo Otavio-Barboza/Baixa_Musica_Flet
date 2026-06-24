@@ -10,6 +10,12 @@ def main(page : ft.Page):
     page.theme_mode = ft.ThemeMode.DARK
     page.bgcolor = ft.Colors.GREY_900
     
+    def obter_pasta_download(page):
+        if page.platform == ft.PagePlatform.ANDROID:
+            return "/storage/emulated/0/Download"
+        return None
+    
+
     pasta_destino : str | None = None
     url_download : str | None = None
 
@@ -21,6 +27,17 @@ def main(page : ft.Page):
     def resultado(e : ft.FilePickerResultEvent):
         nonlocal pasta_destino
         pasta_destino = e.path
+        
+        texto_diretório_selecionado.value = pasta_destino
+        texto_diretório_selecionado.update()
+
+        page.open(
+            ft.SnackBar(
+                content = ft.Text(
+                    value = f'Pasta Selecionada: {str(pasta_destino)}'
+                )
+            )
+        )
 
 
     def abrir_seletor(e):
@@ -28,8 +45,21 @@ def main(page : ft.Page):
 
     
     def baixar_musica(e):
-        baixar_via_ffmpeg()
-    
+        texto = baixar_via_ffmpeg(
+            url = url_download,
+            pasta_destino = pasta_destino
+        )
+
+        if texto is not None:
+            texto_diretório_dawnload.value = texto
+            texto_diretório_dawnload.update()
+        else:
+            page.open(
+                ft.SnackBar(
+                    content = 'Falha no Download, tente novamente!',
+                )
+            )
+
 
     picker = ft.FilePicker(
         on_result = resultado
@@ -67,7 +97,7 @@ def main(page : ft.Page):
                     texto_diretório_selecionado,
                     botao_selecionar_pasta,
                     botao_baixar_musica,
-                    texto_diretório_dawnload
+                    # texto_diretório_dawnload
                 ]
             )
         )
