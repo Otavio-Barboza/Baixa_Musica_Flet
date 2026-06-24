@@ -22,6 +22,7 @@ def main(page : ft.Page):
     def carregar_link(e):
         nonlocal url_download
         url_download = e.control.value
+        print(url_download + ' foi selecionada')
         
 
     def resultado(e : ft.FilePickerResultEvent):
@@ -31,6 +32,7 @@ def main(page : ft.Page):
         texto_diretório_selecionado.value = pasta_destino
         texto_diretório_selecionado.update()
 
+        print(pasta_destino + ' foi selecionada')
         page.open(
             ft.SnackBar(
                 content = ft.Text(
@@ -49,6 +51,9 @@ def main(page : ft.Page):
             url = url_download,
             pasta_destino = pasta_destino
         )
+
+        print(url_download)
+        print(pasta_destino)
 
         if texto is not None:
             texto_diretório_dawnload.value = texto
@@ -97,7 +102,7 @@ def main(page : ft.Page):
                     texto_diretório_selecionado,
                     botao_selecionar_pasta,
                     botao_baixar_musica,
-                    # texto_diretório_dawnload
+                    texto_diretório_dawnload
                 ]
             )
         )

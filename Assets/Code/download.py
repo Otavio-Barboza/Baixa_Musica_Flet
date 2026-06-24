@@ -5,6 +5,10 @@ import os
 def obter_ffmpeg():
     BASE_DIR = Path(__file__).resolve().parent.parent
     FFMPEG_PATH = BASE_DIR / "ffmpeg"
+
+    print(FFMPEG_PATH)
+    print(os.path.exists(FFMPEG_PATH))
+    
     return FFMPEG_PATH
 
 
@@ -18,6 +22,7 @@ def baixar_via_ffmpeg(
         Usa client Android e valida o download para evitar falso sucesso.
     """
 
+    
     os.makedirs(pasta_destino, exist_ok = True)
 
     opcoes = {
@@ -46,6 +51,8 @@ def baixar_via_ffmpeg(
         opcoes["cookiefile"] = cookies
 
     try:
+        print("Iniciando yt-dlp")
+        
         with yt_dlp.YoutubeDL(opcoes) as ydl:
             info = ydl.extract_info(url, download=True)
             nome_arquivo = ydl.prepare_filename(info)
@@ -58,9 +65,11 @@ def baixar_via_ffmpeg(
         else:
             print("\n❌ Erro: o áudio não foi salvo. Provável bloqueio (403).")
             print("💡 Tente atualizar o yt-dlp ou usar cookies do navegador.")
-
+            return '❌ Erro: o áudio não foi salvo. Provável bloqueio (403).\n💡 Tente atualizar o yt-dlp ou usar cookies do navegador.'
     except yt_dlp.utils.DownloadError as e:
         print(f"\n❌ Falha no download: {e}")
         print("💡 Tente atualizar o yt-dlp: pip install -U yt-dlp")
+        return "💡 Tente atualizar o yt-dlp: pip install -U yt-dlp"
     except Exception as e:
         print(f"\n⚠️ Erro inesperado: {e}")
+        return f"\n⚠️ Erro inesperado: {e}"
