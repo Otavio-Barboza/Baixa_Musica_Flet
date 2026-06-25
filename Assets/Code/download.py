@@ -65,10 +65,10 @@ def baixar_via_ffmpeg(
             print("\nErro: o áudio não foi salvo. Provável bloqueio (403).")
             print("Tente atualizar o yt-dlp ou usar cookies do navegador.")
             return 'Erro: o áudio não foi salvo. Provável bloqueio (403).\nTente atualizar o yt-dlp ou usar cookies do navegador.'
-    except yt_dlp.utils.DownloadError as e:
-        print(f"\nFalha no download: {e}")
+    except yt_dlp.utils.DownloadError as utils:
+        print(f"\nFalha no download: {utils}")
         print("Tente atualizar o yt-dlp: pip install -U yt-dlp")
-        return "Tente atualizar o yt-dlp: pip install -U yt-dlp"
+        return f"Falha no download: {utils}"
     except Exception as e:
         print(f"\nErro inesperado: {e}")
         return f"\nErro inesperado: {e}"
