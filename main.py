@@ -8,13 +8,7 @@ def main(page : ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
     page.theme_mode = ft.ThemeMode.DARK
-    page.bgcolor = ft.Colors.GREY_900
-    
-    def obter_pasta_download(page):
-        if page.platform == ft.PagePlatform.ANDROID:
-            return "/storage/emulated/0/Download"
-        return None
-    
+    page.bgcolor = ft.Colors.GREY_900    
 
     pasta_destino : str | None = None
     url_download : str | None = None
@@ -29,10 +23,11 @@ def main(page : ft.Page):
         nonlocal pasta_destino
         pasta_destino = e.path
         
-        texto_diretório_selecionado.value = pasta_destino
-        texto_diretório_selecionado.update()
+        texto_diretorio_selecionado.value = pasta_destino
+        texto_diretorio_selecionado.update()
 
         print(pasta_destino + ' foi selecionada')
+
         page.open(
             ft.SnackBar(
                 content = ft.Text(
@@ -47,23 +42,24 @@ def main(page : ft.Page):
 
     
     def baixar_musica(e):
-        texto = baixar_via_ffmpeg(
+        nonlocal url_download, pasta_destino
+
+        texto_diretorio_dawnload.value = baixar_via_ffmpeg(
             url = url_download,
             pasta_destino = pasta_destino
         )
+        texto_diretorio_dawnload.update()
 
         print(url_download)
         print(pasta_destino)
 
-        if texto is not None:
-            texto_diretório_dawnload.value = texto
-            texto_diretório_dawnload.update()
-        else:
-            page.open(
-                ft.SnackBar(
-                    content = 'Falha no Download, tente novamente!',
+        page.open(
+            ft.SnackBar(
+                content = ft.Text(
+                    value = f'Download Concluído: {str(texto_diretorio_dawnload.value)}'
                 )
             )
+        )
 
 
     picker = ft.FilePicker(
@@ -73,7 +69,7 @@ def main(page : ft.Page):
     page.overlay.append(picker)
 
     input_link_video = ft.TextField(
-        on_submit = carregar_link
+        on_change = carregar_link
     )
 
     botao_selecionar_pasta = ft.TextButton(
@@ -81,12 +77,8 @@ def main(page : ft.Page):
         on_click = abrir_seletor
     )
     
-    texto_diretório_selecionado = ft.Text(
+    texto_diretorio_selecionado = ft.Text(
         value = 'Nenhum diretório selecionado'
-    )
-    
-    texto_diretório_dawnload = ft.Text(
-        value = r'Assets\Download\...'
     )
     
     botao_baixar_musica = ft.TextButton(
@@ -94,15 +86,19 @@ def main(page : ft.Page):
         on_click = baixar_musica
     )
 
+    texto_diretorio_dawnload = ft.Text(
+        value = f'Assets/Download/...'
+    )
+
     page.add(
         ft.SafeArea(
             content = ft.Column(
                 controls = [
                     input_link_video,
-                    texto_diretório_selecionado,
+                    texto_diretorio_selecionado,
                     botao_selecionar_pasta,
                     botao_baixar_musica,
-                    texto_diretório_dawnload
+                    texto_diretorio_dawnload
                 ]
             )
         )

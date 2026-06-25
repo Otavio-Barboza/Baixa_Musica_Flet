@@ -57,7 +57,6 @@ def baixar_via_ffmpeg(
             info = ydl.extract_info(url, download=True)
             nome_arquivo = ydl.prepare_filename(info)
             nome_mp3 = os.path.splitext(nome_arquivo)[0] + ".mp3"
-
         if os.path.exists(nome_mp3):
             print(f"\n✅ Download concluído com sucesso!")
             print(f"📂 Arquivo salvo em: {os.path.abspath(nome_mp3)}")
