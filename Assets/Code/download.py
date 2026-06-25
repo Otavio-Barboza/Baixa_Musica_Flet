@@ -58,17 +58,17 @@ def baixar_via_ffmpeg(
             nome_arquivo = ydl.prepare_filename(info)
             nome_mp3 = os.path.splitext(nome_arquivo)[0] + ".mp3"
         if os.path.exists(nome_mp3):
-            print(f"\n✅ Download concluído com sucesso!")
-            print(f"📂 Arquivo salvo em: {os.path.abspath(nome_mp3)}")
-            return f'✅ Download concluído com sucesso!\n📂 Arquivo salvo em: {os.path.abspath(nome_mp3)}'
+            print(f"\nDownload concluído com sucesso!")
+            print(f"Arquivo salvo em: {os.path.abspath(nome_mp3)}")
+            return f'Arquivo salvo em: {os.path.abspath(nome_mp3)}'
         else:
-            print("\n❌ Erro: o áudio não foi salvo. Provável bloqueio (403).")
-            print("💡 Tente atualizar o yt-dlp ou usar cookies do navegador.")
-            return '❌ Erro: o áudio não foi salvo. Provável bloqueio (403).\n💡 Tente atualizar o yt-dlp ou usar cookies do navegador.'
+            print("\nErro: o áudio não foi salvo. Provável bloqueio (403).")
+            print("Tente atualizar o yt-dlp ou usar cookies do navegador.")
+            return 'Erro: o áudio não foi salvo. Provável bloqueio (403).\nTente atualizar o yt-dlp ou usar cookies do navegador.'
     except yt_dlp.utils.DownloadError as e:
-        print(f"\n❌ Falha no download: {e}")
-        print("💡 Tente atualizar o yt-dlp: pip install -U yt-dlp")
-        return "💡 Tente atualizar o yt-dlp: pip install -U yt-dlp"
+        print(f"\nFalha no download: {e}")
+        print("Tente atualizar o yt-dlp: pip install -U yt-dlp")
+        return "Tente atualizar o yt-dlp: pip install -U yt-dlp"
     except Exception as e:
-        print(f"\n⚠️ Erro inesperado: {e}")
-        return f"\n⚠️ Erro inesperado: {e}"
+        print(f"\nErro inesperado: {e}")
+        return f"\nErro inesperado: {e}"

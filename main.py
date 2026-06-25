@@ -39,29 +39,35 @@ def main(page : ft.Page):
 
     def abrir_seletor(e):
         picker.get_directory_path()
-
     
-    def baixar_musica(e):
-        nonlocal url_download, pasta_destino
 
-        texto_diretorio_dawnload.value = baixar_via_ffmpeg(
-            url = url_download,
-            pasta_destino = pasta_destino
-        )
-        texto_diretorio_dawnload.update()
+    def baixar_musica(e):        
+        try:
+            resultado = baixar_via_ffmpeg(
+                url = url_download,
+                pasta_destino = pasta_destino
+            )
 
-        print(url_download)
-        print(pasta_destino)
+            texto_diretorio_dawnload.value = resultado
+            page.update()
 
-        page.open(
-            ft.SnackBar(
-                content = ft.Text(
-                    value = f'Download Concluído: {str(texto_diretorio_dawnload.value)}'
+            page.open(
+                ft.SnackBar(
+                    content = ft.Text(
+                        value = f'Download concluído com sucesso'
+                    )
                 )
             )
-        )
-
-
+        except Exception as e:
+            page.open(
+                ft.SnackBar(
+                    content = ft.Text(
+                        value = f'Falha no Download, tente novamente!'
+                    )
+                )
+            )
+        
+        
     picker = ft.FilePicker(
         on_result = resultado
     )
