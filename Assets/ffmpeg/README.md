@@ -1,0 +1,2 @@
+Ao usar do código, adicione os arquivos .exe (ffmpeg.exe e ffprobe.exe) nesse diretório (Assets/ffmpeg/);
+O app usa exclusivamente do ffmpeg para baixar os arquivos. Portanto, é obrigatório conter esses dois arquivos, senão não funcionará.
