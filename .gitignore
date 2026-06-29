@@ -16,3 +16,6 @@ venv/
 # iss
 instalador.iss
 instaladores/
+
+# ffmpeg
+Assets/ffmpeg/*.exe
