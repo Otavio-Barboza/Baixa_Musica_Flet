@@ -21,7 +21,6 @@ def baixar_via_ffmpeg(
         Baixa o áudio de um vídeo do YouTube em formato MP3.
         Usa client Android e valida o download para evitar falso sucesso.
     """
-
     
     os.makedirs(pasta_destino, exist_ok = True)
 
@@ -57,18 +56,15 @@ def baixar_via_ffmpeg(
             info = ydl.extract_info(url, download=True)
             nome_arquivo = ydl.prepare_filename(info)
             nome_mp3 = os.path.splitext(nome_arquivo)[0] + ".mp3"
+
         if os.path.exists(nome_mp3):
-            print(f"\nDownload concluído com sucesso!")
-            print(f"Arquivo salvo em: {os.path.abspath(nome_mp3)}")
             return f'Arquivo salvo em: {os.path.abspath(nome_mp3)}'
         else:
             print("\nErro: o áudio não foi salvo. Provável bloqueio (403).")
-            print("Tente atualizar o yt-dlp ou usar cookies do navegador.")
-            return 'Erro: o áudio não foi salvo. Provável bloqueio (403).\nTente atualizar o yt-dlp ou usar cookies do navegador.'
+            return 'Áudio não salvo, tente o download novamente!'
     except yt_dlp.utils.DownloadError as utils:
         print(f"\nFalha no download: {utils}")
-        print("Tente atualizar o yt-dlp: pip install -U yt-dlp")
-        return f"Falha no download: {utils}"
+        return "Falha no download, tente novamente!"
     except Exception as e:
         print(f"\nErro inesperado: {e}")
-        return f"\nErro inesperado: {e}"
+        return "Erro não identificado, tente novamente!"
