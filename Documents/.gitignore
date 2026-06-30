@@ -19,4 +19,4 @@ instaladores/
 
 # ffmpeg
 Assets/ffmpeg/*.exe
-/Windows Setup/**
+Baixa_Musica_Flet/Release/**
