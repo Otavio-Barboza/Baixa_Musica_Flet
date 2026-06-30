@@ -1,12 +1,12 @@
 [Setup]
 AppId={{A8F69B62-8F1A-4A76-BD91-123456789ABC}
 AppName=Baixa Musica
-AppVersion=1.0.0
+AppVersion=1.1.0
 AppPublisher=Otavio
 DefaultDirName={autopf}\Baixa Musica
 DefaultGroupName=Baixa Musica
-OutputDir=instaladores
-OutputBaseFilename=BaixaMusicaSetup
+OutputDir=..\Release\Windows
+OutputBaseFilename=BaixaMusicaSetup v(1.1.0)
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -18,7 +18,7 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "Criar atalho na área de trabalho"; GroupDescription: "Atalhos:"
 
 [Files]
-Source: "build\windows\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: "..\Project\build\windows\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Baixa Musica"; Filename: "{app}\baixa_musica.exe"
