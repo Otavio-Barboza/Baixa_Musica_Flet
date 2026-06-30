@@ -19,4 +19,4 @@ instaladores/
 
 # ffmpeg
 Assets/ffmpeg/*.exe
-Baixa_Musica_Flet/Release/**
+Release/**
