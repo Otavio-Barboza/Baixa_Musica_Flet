@@ -1,4 +1,4 @@
-from Project.Assets.Code.download import baixar_via_ffmpeg
+from Assets.Code.download import baixar_via_ffmpeg
 import flet as ft
 
 def main(page : ft.Page):

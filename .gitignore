@@ -13,10 +13,6 @@ venv/
 .vscode/
 .idea/
 
-# iss
-instalador.iss
-instaladores/
-
 # ffmpeg
-Assets/ffmpeg/*.exe
-Release/**
+Project/Assets/ffmpeg/*.exe
+Release/Windows/*.exe
