@@ -20,4 +20,4 @@ instaladores/
 # ffmpeg
 Assets/ffmpeg/*.exe
 
-Windows Setup/*.exe
+Windows Setup/**
