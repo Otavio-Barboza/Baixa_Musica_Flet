@@ -2,19 +2,15 @@ from pathlib import Path
 import yt_dlp
 import os
 
-def obter_ffmpeg():
+def _get_ffmpeg():
     BASE_DIR = Path(__file__).resolve().parent.parent
     FFMPEG_PATH = BASE_DIR / "ffmpeg"
-
-    print(FFMPEG_PATH)
-    print(os.path.exists(FFMPEG_PATH))
-    
     return FFMPEG_PATH
 
 
 def baixar_via_ffmpeg(
     url: str, 
-    pasta_destino: str = r"C:\Users\barbo\Music", 
+    destination_path: str = r"C:\Users\barbo\Music", 
     cookies: str | None = None
 ) -> str:
     """
@@ -22,11 +18,11 @@ def baixar_via_ffmpeg(
         Usa client Android e valida o download para evitar falso sucesso.
     """
     
-    os.makedirs(pasta_destino, exist_ok = True)
+    os.makedirs(destination_path, exist_ok = True)
 
-    opcoes = {
+    options = {
         "format": "bestaudio/best",
-        "outtmpl": os.path.join(pasta_destino, "%(title)s.%(ext)s"),
+        "outtmpl": os.path.join(destination_path, "%(title)s.%(ext)s"),
         "noplaylist": True,
         "nocheckcertificate": True,
         "geo_bypass": True,
@@ -43,22 +39,22 @@ def baixar_via_ffmpeg(
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
-        "ffmpeg_location": obter_ffmpeg()
+        "ffmpeg_location": _get_ffmpeg()
     }
 
     if cookies and os.path.exists(cookies):
-        opcoes["cookiefile"] = cookies
+        options["cookiefile"] = cookies
 
     try:
         print("Iniciando yt-dlp")
         
-        with yt_dlp.YoutubeDL(opcoes) as ydl:
-            info = ydl.extract_info(url, download=True)
-            nome_arquivo = ydl.prepare_filename(info)
-            nome_mp3 = os.path.splitext(nome_arquivo)[0] + ".mp3"
+        with yt_dlp.YoutubeDL(options) as ydl:
+            information = ydl.extract_info(url, download=True)
+            file_name = ydl.prepare_filename(information)
+            mp3_name = os.path.splitext(file_name)[0] + ".mp3"
 
-        if os.path.exists(nome_mp3):
-            return f'Arquivo salvo em: {os.path.abspath(nome_mp3)}'
+        if os.path.exists(mp3_name):
+            return f'Arquivo salvo em: {os.path.abspath(mp3_name)}'
         else:
             print("\nErro: o áudio não foi salvo. Provável bloqueio (403).")
             return 'Áudio não salvo, tente o download novamente!'
