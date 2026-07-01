@@ -1,5 +1,5 @@
-from assets.core.cache_download import CacheDownload
-from assets.core.download import baixar_via_ffmpeg
+from project.assets.core.cache_download import CacheDownload
+from project.assets.core.download import baixar_via_ffmpeg
 import os, sys
 import flet as ft
 
