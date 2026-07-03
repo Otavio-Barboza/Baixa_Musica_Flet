@@ -1,5 +1,5 @@
-from assets.core.cache_download import CacheDownload
-from assets.core.download import baixar_via_ffmpeg
+from assets.core.controller_download import ControllerDownload
+from assets.core.download import download
 import os, sys
 import flet as ft
 
@@ -27,32 +27,66 @@ def main(page: ft.Page):
     page.bgcolor = "#121219"
 
 
-    # Variáveis auxiliares do app
-    destination_path: str | None = None
-
-
     # Event Handlers (Manipuladores de Eventos) - funções que correspondem a um evento.
     def handle_url_submit(event):
-        url_download: list[str] = str(event.control.value).splitlines()
+        """
+        _summary_: Função capta o conteúdo submetido pelo TextField, adicionando-o ao _cache_downloads e adicionando o/os container(s) de download;
 
-        CacheDownload.add_download(url_download)
-        add_download_container(url_download)
+        Args:
+            event (evento on_submit): Realização a sbmissão do conteúdo.
+        """
+
+        url_download: list[str] = str(event.control.value).splitlines()
+        ControllerDownload.add_url_to_download(url_download)
+        
+        input_link_video.value = ''
+        input_link_video.update()
+        
+    def remove_container(event):
+        """
+        _summary_: Função criada para a remoção do container desejado. Por conta do evento estar no IconButton, foi associado o 'data' do container ao button também, assim com o loop for é possível obter o container de referência clicado e removê-lo.  
+
+        Args:
+            event (evento do on_click): Click no IconButton do container.
+        """
+  
+        container_to_remove: ft.Container | None = None
+
+        for container in downloads_list_view.controls:
+            if container.data == event.control.data:
+                container_to_remove = container
+                break
+        
+        if container_to_remove is not None:
+            ControllerDownload.remove_url_to_download(event.control.data)
+
+            downloads_list_view.controls.remove(container_to_remove)
+            downloads_list_view.update()
 
     # Seleção de pasta
     def on_directory_selected(e: ft.FilePickerResultEvent):
-        destination_path: str = e.path
+        """
+        _summary_: Função para abrir o seletor nativo do flet, com auxilio da função open_selector(e) capturando o diretório destinado pelo usuário e atualizando a variável destination_path para atribuição do download na pasta atribuída pelo usuário; 
+
+        Args:
+            e (ft.FilePickerResultEvent): Evento da captura da pasta selecionada.
+        """
+
+        if e.path is None:
+            ControllerDownload.notify_callback(
+                event = 'information_download',
+                data = "Selecione uma pasta válida"
+            )
+            return
+
+        download.set_path(e.path)
         
-        selected_directory_text.value = destination_path
+        selected_directory_text.value = e.path
         selected_directory_text.update()
 
-        print(destination_path + ' foi selecionada')
-
-        page.open(
-            ft.SnackBar(
-                content = ft.Text(
-                    value = f'Pasta Selecionada: {str(destination_path)}'
-                )
-            )
+        ControllerDownload.notify_callback(
+            event = 'snack_bar_information',
+            data = f"Pasta Selecionada: {e.path}"
         )
 
     def open_selector(e):
@@ -64,17 +98,33 @@ def main(page: ft.Page):
 
     # Monitoramento de redimensionamento
     def handle_resize(event):
-        width = page.width
-        align = directory_download_text.text_align
+        # Função para monitoramento do redimensionamento (width) na atualização do posicionamento do texto informátivo de download e tamanho ocupado pelos containeres do ListView.
+
+        align: ft.TextAlign = directory_download_text.text_align
         
         if page.width <= 575 and align != ft.TextAlign.LEFT:
+            # atualizando TextAlifgn do texto informativo de download
             directory_download_text.text_align = ft.TextAlign.LEFT
             directory_download_text.update()
+
+            # atualizando o tamanho do espaço ocupado pela url em cada container da ListView
+            if len(downloads_list_view.controls) != 0:
+                for container in downloads_list_view.controls:
+                    container.content.controls[1].width = 380
+                    container.update()
         elif page.width > 575 and align != ft.TextAlign.RIGHT:
+            # atualizando TextAlifgn do texto informativo de download
             directory_download_text.text_align = ft.TextAlign.RIGHT 
             directory_download_text.update()
+
+            # atualizando o tamanho do espaço ocupado pela url em cada container da ListView
+            if len(downloads_list_view.controls) != 0:
+                for container in downloads_list_view.controls:
+                    container.content.controls[1].width = 460
+                    container.update()
         else:
             return
+        
 
     # Helper Functions (Funções Auxiliares) - são funções auxiliares que ajudam outras funções, mas não responde diretamente a eventos.
     def _create_text_button(
@@ -114,12 +164,14 @@ def main(page: ft.Page):
     
     def _create_download_container(url: str) -> ft.Container:
         return ft.Container(
-            height = 50,
+            height = 60,
             bgcolor = "#1e1b2e",
             border_radius = ft.border_radius.only(
                 top_right = 15,
                 bottom_right = 15
             ),
+
+            data = url,
 
             content = ft.Row(
                 alignment = ft.MainAxisAlignment.CENTER,
@@ -127,7 +179,7 @@ def main(page: ft.Page):
 
                 controls = [
                     ft.Container(
-                        height = 50,
+                        height = 60,
                         width = 5.5,
                         border_radius = ft.border_radius.only(
                             top_left = 15,
@@ -136,12 +188,28 @@ def main(page: ft.Page):
                         bgcolor = "#ff8c00",
                     ),
 
-                    ft.Text(
-                        value = url,
-                        size = 16,
-                        color = "#ededf1",
-                        max_lines = 2,
-                        overflow = ft.TextOverflow.ELLIPSIS
+                    ft.Column(
+                        width = 460,    
+                        spacing = 2.5,
+                        alignment = ft.MainAxisAlignment.CENTER,
+
+                        controls = [
+                            ft.Text(
+                                value = url,
+                                size = 16,
+                                color = "#ededf1",
+                                max_lines = 1,
+                                overflow = ft.TextOverflow.ELLIPSIS,
+                            ),
+                            ft.Text(
+                                value = '🔸 Aguardando download...',
+                                size = 13,
+                                color = "#ededf1",
+                                max_lines = 1,
+                                overflow = ft.TextOverflow.ELLIPSIS,
+                                weight = ft.FontWeight.W_300
+                            ),
+                        ]
                     ),
 
                     ft.Container(expand = True),
@@ -156,25 +224,121 @@ def main(page: ft.Page):
                             },
                             overlay_color = ft.Colors.TRANSPARENT
                         ),
+
+                        data = url,
+
+                        on_click = remove_container
                     )
                 ]
             )
         )
-        
-    def add_download_container(url_list: list[str]):
-        for url in url_list:
+                
+    def _add_download_container(urls: list[str]):
+        # Função para adicionar um novo container de download conforme as url(s) que o usuário submeter.
+
+        _existing_urls: list[str] = []
+
+        for container in downloads_list_view.controls:
+            _existing_urls.append(container.data)
+
+        for url in urls:
             downloads_list_view.controls.append(
-                _create_download_container(url = url)
+                _create_download_container(url)
             )
             downloads_list_view.update()
 
-    def download_music(event):
-        ...
 
+    # Funções de download e atualização de status
+    def download_music(event):
+        ControllerDownload.start_downloads_queue()
+
+    def _update_containers_downloads(data: str):
+        print(data)
+        if len(downloads_list_view.controls) != 0:
+            for container in downloads_list_view.controls:
+                if data["url"] == container.data:
+                    container.content.controls[1].controls[1].value = data["status"]
+                    container.update()
+
+    def clear_containers(*_):
+        downloads_list_view.controls.clear()
+        downloads_list_view.update()
+
+    def _update_title_download(text: str):
+        title_download.value = text
+        title_download.update()
+
+    def _update_information_downloads(data: dict[str, int | float]):
+        error_text.value = f"erro(s): {data.get('number_of_download_errors') or 0}"
+        
+        downloaded_text.value = f"""baixados: {
+            data.get('current_downloaded_quantity') or 0
+        }/{
+            data.get('total_downloads') or 0
+        }  |  {
+            data.get('current_percentage_downloaded') or 0.0
+        }%"""
+        
+        error_text.update()
+        downloaded_text.update()
+    
+    def update_progress_bar(value: int):
+        if value is None:
+            return
+        
+        progress_bar.value = value
+        progress_bar.update()
+    
+    def snack_bar(text: str):
+        """
+        _summary_: Função para operar de modo informativo, para erros, sucessos etc.
+
+        Args:
+            text (str): texto informativo qualquer.
+        """
+
+        page.open(
+            ft.SnackBar(
+                content = ft.Text(
+                    value = text
+                )
+            )
+        )
 
     # Overlay e resize
     page.overlay.append(picker)
     page.on_resized = handle_resize
+
+
+    # callbacks
+    ControllerDownload.register_callback(
+        event = 'snack_bar_information',
+        callback = snack_bar
+    )
+    ControllerDownload.register_callback(
+        event = 'add_download',
+        callback = _add_download_container
+    )
+    ControllerDownload.register_callback(
+        event = 'downloaded_text',
+        callback = _update_information_downloads
+    )
+    ControllerDownload.register_callback(
+        event = 'title_download',
+        callback = _update_title_download
+    )
+    ControllerDownload.register_callback(
+        event = 'update_container_download',
+        callback = _update_containers_downloads
+    )
+    ControllerDownload.register_callback(
+        event = 'update_progress_bar',
+        callback = update_progress_bar
+    )
+    ControllerDownload.register_callback(
+        event = 'clear_containers',
+        callback = clear_containers
+    )
 
     page.add(
         ft.SafeArea(
@@ -187,14 +351,47 @@ def main(page: ft.Page):
 
                 controls = [
                     # Listagem dos downloads em fila
-                    information_downloads := ft.Text(
+                    title_download := ft.Text(
                         value = 'Nenhum link atribuído para download...',
                         size = 24,
-                        color = "#ededf1"
+                        color = "#ededf1",
+                        weight = ft.FontWeight.BOLD
                     ),
                     
+                    ft.Column(
+                        controls = [
+                            progress_bar := ft.ProgressBar(
+                                value = 0,
+                                border_radius = ft.border_radius.all(20)
+                            ),
+
+                            ft.Row(
+                                vertical_alignment = ft.CrossAxisAlignment.CENTER,
+                                alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+
+                                controls = [
+                                    ft.Text(
+                                        value = 'Status Downloads...',
+                                        weight = ft.FontWeight.BOLD,
+                                        size = 13
+                                    ),
+                                    error_text := ft.Text(
+                                        value = 'erro(s):',
+                                        weight = ft.FontWeight.W_300,
+                                        size = 13
+                                    ),
+                                    downloaded_text := ft.Text(
+                                        value = 'baixados: 0/0  |  0%',
+                                        weight = ft.FontWeight.W_300,
+                                        size = 13
+                                    )
+                                ]
+                            )
+                        ]
+                    ),
+
                     downloads_list_view := ft.ListView(
-                        height = 600,
+                        height = 500,
                         spacing = 7.5,
 
                         controls = []
