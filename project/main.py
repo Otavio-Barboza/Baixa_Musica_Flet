@@ -1,5 +1,5 @@
-from project.assets.core.cache_download import CacheDownload
-from project.assets.core.download import baixar_via_ffmpeg
+from assets.core.cache_download import CacheDownload
+from assets.core.download import baixar_via_ffmpeg
 import os, sys
 import flet as ft
 
@@ -33,14 +33,14 @@ def main(page: ft.Page):
 
     # Event Handlers (Manipuladores de Eventos) - funções que correspondem a um evento.
     def handle_url_submit(event):
-        url_download = event.control.value
+        url_download: list[str] = str(event.control.value).splitlines()
 
         CacheDownload.add_download(url_download)
         add_download_container(url_download)
 
     # Seleção de pasta
     def on_directory_selected(e: ft.FilePickerResultEvent):
-        destination_path = e.path
+        destination_path: str = e.path
         
         selected_directory_text.value = destination_path
         selected_directory_text.update()
@@ -161,11 +161,12 @@ def main(page: ft.Page):
             )
         )
         
-    def add_download_container(url: str):
-        downloads_list_view.controls.append(
-            _create_download_container(url = url)
-        )
-        downloads_list_view.update()
+    def add_download_container(url_list: list[str]):
+        for url in url_list:
+            downloads_list_view.controls.append(
+                _create_download_container(url = url)
+            )
+            downloads_list_view.update()
 
     def download_music(event):
         ...

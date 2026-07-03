@@ -23,13 +23,17 @@ class CacheDownload:
         )
     
     @classmethod
-    def _atualizar_downloads(cls, url: str):
-        if url not in cls._cache_downloads:
-            cls._cache_downloads.append(url)
+    def _atualizar_downloads(cls, url_list: list):
+        for url in url_list:
+            if (
+                url not in cls._cache_downloads 
+                 and 
+                cls._validate_url(url)
+            ):
+                cls._cache_downloads.append(url)
 
     @classmethod
-    def add_download(cls, url: str):
-        if cls._validate_url(url = url):
-            cls._atualizar_downloads(url = url)
-
+    def add_download(cls, url_list: list):
+        # if cls._validate_url(url_list = url_list):
+        cls._atualizar_downloads(url_list = url_list)
         print(cls._cache_downloads)
