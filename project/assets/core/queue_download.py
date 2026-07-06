@@ -128,6 +128,7 @@ class DownloadQueue:
         from .controller_download import ControllerDownload
         
         self.set_is_running(False)
+        
         ControllerDownload.notify_callback(
             event = "snack_bar_information",
             data = "Lista de downloads terminou!"
@@ -156,6 +157,7 @@ class DownloadQueue:
             
             self.stop()
 
+            self._current_index = 0
             self._queue_information = {
                 "number_of_download_errors" : 0,
                 "current_downloaded_quantity" : 0,
