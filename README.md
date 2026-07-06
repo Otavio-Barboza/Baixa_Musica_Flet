@@ -2,6 +2,13 @@
 
 Aplicativo para download de músicas desenvolvido com Python e Flet.
 
+1. Copie o link do vídeo desejado e cole no campo de texto do app;
+2. Você pode colar até 50 links por vez;
+3. Para funcionar aperte "enter" para submeter as informações;
+4. Os links serão carregados um a um com o título carregado, leva 2 a 3 segundos para cada link aparecer na fila devida a requisição à internet para pegar o título;
+5. Depois de colar os seus links, selecione uma pasta que deseja colocar suas músicas;
+6. Clique em Baixar que será baixado e redirecionado automaticamente para o pasta selecionada.
+
 
 ## Download
 
