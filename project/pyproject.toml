@@ -1,6 +1,6 @@
 [project]
 name = "baixa-musica"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
     "flet==0.28.3",
     "yt-dlp==2026.3.17",
