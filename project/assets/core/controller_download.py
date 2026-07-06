@@ -5,13 +5,15 @@ class ControllerDownload:
 
     # Manipulação: registro e notificação de callbacks.
     _callbacks = {
-        'snack_bar_information' : [],
-        'add_download' : [],
-        'downloaded_text' : [],
-        'title_download' : [],
-        'update_container_download' : [],
-        'update_progress_bar' : [],
-        'clear_containers' : []
+        "snack_bar_information" : [],
+        "add_download" : [],
+        "downloaded_text" : [],
+        "title_download" : [],
+        "update_container_download" : [],
+        "update_progress_bar" : [],
+        "clear_containers" : [],
+        "path_download_saved" : [],
+        "state_button" : []
     }
 
     @classmethod
@@ -31,10 +33,10 @@ class ControllerDownload:
         download_queue.add(urls_to_download)
 
         cls.notify_callback(
-            event = 'add_download', data = urls_to_download
+            event = "add_download", data = urls_to_download
         )
         cls.notify_callback(
-            event = 'downloaded_text', data = download_queue.return_queue_information()
+            event = "downloaded_text", data = download_queue.return_queue_information()
         )
 
     @classmethod
@@ -43,7 +45,7 @@ class ControllerDownload:
         download_queue.remove(url)
 
         cls.notify_callback(
-            event = 'downloaded_text', data = download_queue.return_queue_information()
+            event = "downloaded_text", data = download_queue.return_queue_information()
         )
 
     
@@ -51,13 +53,9 @@ class ControllerDownload:
     @classmethod
     def start_downloads_queue(cls):
         cls.notify_callback(
-            event = 'title_download',
-            data = 'Baixando seus MP3...'
-        )    
-        cls.notify_callback(
-            event = 'snack_bar_information',
-            data = 'Iniciando downloads...'
-        )    
+            event = "title_download",
+            data = "Baixando seus MP3..."
+        )        
         
         download_queue.set_is_running(True)
         download_queue.start()
@@ -67,6 +65,11 @@ class ControllerDownload:
         download_queue.clear_queue()
         CacheDownload.clear_cache_downloads()
         cls.notify_callback(
-            event = 'clear_containers',
+            event = "clear_containers",
             data = None
         )
+
+    @classmethod
+    def return_title_video(cls, url: str) -> str:
+        from .download import download
+        return download.return_title_video(url)

@@ -63,13 +63,13 @@ class CacheDownload:
                 cls._cache_downloads.add(url)
                 added_urls.append(url)
         
-        print(cls._cache_downloads)
+        # print(cls._cache_downloads)
         return added_urls
     
     @classmethod
     def remove_download(cls, url_to_remove: str):
         cls._remove_url(url_to_remove)
-        print(cls._cache_downloads)
+        # print(cls._cache_downloads)
     
     @classmethod
     def clear_cache_downloads(cls):

@@ -67,27 +67,35 @@ class Download:
                 mp3_name = os.path.splitext(file_name)[0] + ".mp3"
 
             if os.path.exists(mp3_name):
+                ControllerDownload.notify_callback(
+                    event = "path_download_saved",
+                    data = f"Salvo em: {mp3_name}"
+                )
                 return True
             else:
                 ControllerDownload.notify_callback(
-                    event = 'snack_bar_information',
+                    event = "snack_bar_information",
                     data = f"erro no download: {mp3_name}, tente novamente!"
                 )
                 return False
         except yt_dlp.utils.DownloadError as utils:
             print(f"\nFalha no download: {utils}")
             ControllerDownload.notify_callback(
-                event = 'snack_bar_information',
+                event = "snack_bar_information",
                 data = f"erro no download: {mp3_name}, tente novamente!"
             )
             return False
         except Exception as e:
             print(f"\nErro inesperado: {e}")
             ControllerDownload.notify_callback(
-                event = 'snack_bar_information',
+                event = "snack_bar_information",
                 data = f"erro inesperado no download: {mp3_name}, tente novamente!"
             )
             return False
-        
+    
+    def return_title_video(self, url: str) -> str:
+        with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
+            info = ydl.extract_info(url, download=False)
+        return info["title"]
 
 download = Download()

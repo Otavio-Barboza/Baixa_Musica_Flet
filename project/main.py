@@ -16,7 +16,7 @@ if hasattr(sys.stderr, "reconfigure"):
 def main(page: ft.Page):
 
     # Comandos e configurações gerais da page.
-    page.title = 'Baixa Música'
+    page.title = "Baixa Música"
         
     page.window.min_width = 500
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -24,6 +24,12 @@ def main(page: ft.Page):
     
     page.scroll = ft.ScrollMode.ADAPTIVE
     page.theme_mode = ft.ThemeMode.DARK
+    page.fonts = {
+        "google_sans_flex" : r"font\GoogleSansFlex.ttf"
+    }
+    page.theme = ft.Theme(
+        font_family = "google_sans_flex"
+    )
     page.bgcolor = "#121219"
 
 
@@ -39,12 +45,12 @@ def main(page: ft.Page):
         url_download: list[str] = str(event.control.value).splitlines()
         ControllerDownload.add_url_to_download(url_download)
         
-        input_link_video.value = ''
+        input_link_video.value = ""
         input_link_video.update()
         
     def remove_container(event):
         """
-        _summary_: Função criada para a remoção do container desejado. Por conta do evento estar no IconButton, foi associado o 'data' do container ao button também, assim com o loop for é possível obter o container de referência clicado e removê-lo.  
+        _summary_: Função criada para a remoção do container desejado. Por conta do evento estar no IconButton, foi associado o "data" do container ao button também, assim com o loop for é possível obter o container de referência clicado e removê-lo.  
 
         Args:
             event (evento do on_click): Click no IconButton do container.
@@ -74,18 +80,18 @@ def main(page: ft.Page):
 
         if e.path is None:
             ControllerDownload.notify_callback(
-                event = 'information_download',
+                event = "information_download",
                 data = "Selecione uma pasta válida"
             )
             return
 
         download.set_path(e.path)
         
-        selected_directory_text.value = e.path
+        selected_directory_text.value = f"Pasta selecionada: {e.path}"
         selected_directory_text.update()
 
         ControllerDownload.notify_callback(
-            event = 'snack_bar_information',
+            event = "snack_bar_information",
             data = f"Pasta Selecionada: {e.path}"
         )
 
@@ -138,7 +144,7 @@ def main(page: ft.Page):
         return ft.TextButton(
             width = 400,
             height = 40,
-            col = {'xs': 12, 'sm': 6},
+            col = {"xs": 12, "sm": 6},
             text = text,
             icon = icon,
 
@@ -151,14 +157,15 @@ def main(page: ft.Page):
                 },
                 text_style = ft.TextStyle(
                     size = 16,
-                    weight = ft.FontWeight.W_500
+                    weight = ft.FontWeight.W_500,
+                    font_family = "google_sans_flex"
                 ),
                 shape = ft.RoundedRectangleBorder(
                     radius = 15
                 ),
                 icon_size = icon_size,
                 icon_color = "#ededf1",
-                color = "#ededf1" 
+                color = "#ededf1"
             )
         )
     
@@ -195,19 +202,21 @@ def main(page: ft.Page):
 
                         controls = [
                             ft.Text(
-                                value = url,
+                                value = ControllerDownload.return_title_video(url),
                                 size = 16,
                                 color = "#ededf1",
                                 max_lines = 1,
                                 overflow = ft.TextOverflow.ELLIPSIS,
+                                font_family = "google_sans_flex"
                             ),
                             ft.Text(
-                                value = '🔸 Aguardando download...',
+                                value = "🔸 Aguardando download...",
                                 size = 13,
                                 color = "#ededf1",
                                 max_lines = 1,
                                 overflow = ft.TextOverflow.ELLIPSIS,
-                                weight = ft.FontWeight.W_300
+                                weight = ft.FontWeight.W_300,
+                                font_family = "google_sans_flex"
                             ),
                         ]
                     ),
@@ -288,7 +297,12 @@ def main(page: ft.Page):
         
         progress_bar.value = value
         progress_bar.update()
-    
+
+    def update_directory_download_save(path: str):
+        print('chamando callback')
+        directory_download_text.value = path
+        directory_download_text.update()
+
     def snack_bar(text: str):
         """
         _summary_: Função para operar de modo informativo, para erros, sucessos etc.
@@ -312,32 +326,36 @@ def main(page: ft.Page):
 
     # callbacks
     ControllerDownload.register_callback(
-        event = 'snack_bar_information',
+        event = "snack_bar_information",
         callback = snack_bar
     )
     ControllerDownload.register_callback(
-        event = 'add_download',
+        event = "add_download",
         callback = _add_download_container
     )
     ControllerDownload.register_callback(
-        event = 'downloaded_text',
+        event = "downloaded_text",
         callback = _update_information_downloads
     )
     ControllerDownload.register_callback(
-        event = 'title_download',
+        event = "title_download",
         callback = _update_title_download
     )
     ControllerDownload.register_callback(
-        event = 'update_container_download',
+        event = "update_container_download",
         callback = _update_containers_downloads
     )
     ControllerDownload.register_callback(
-        event = 'update_progress_bar',
+        event = "update_progress_bar",
         callback = update_progress_bar
     )
     ControllerDownload.register_callback(
-        event = 'clear_containers',
+        event = "clear_containers",
         callback = clear_containers
+    )
+    ControllerDownload.register_callback(
+        event = "path_download_saved",
+        callback = update_directory_download_save
     )
 
     page.add(
@@ -352,7 +370,7 @@ def main(page: ft.Page):
                 controls = [
                     # Listagem dos downloads em fila
                     title_download := ft.Text(
-                        value = 'Nenhum link atribuído para download...',
+                        value = "Nenhum link atribuído para download...",
                         size = 24,
                         color = "#ededf1",
                         weight = ft.FontWeight.BOLD
@@ -362,7 +380,8 @@ def main(page: ft.Page):
                         controls = [
                             progress_bar := ft.ProgressBar(
                                 value = 0,
-                                border_radius = ft.border_radius.all(20)
+                                border_radius = ft.border_radius.all(20),
+                                color = "#ffa94d"
                             ),
 
                             ft.Row(
@@ -371,17 +390,17 @@ def main(page: ft.Page):
 
                                 controls = [
                                     ft.Text(
-                                        value = 'Status Downloads...',
+                                        value = "Status Downloads...",
                                         weight = ft.FontWeight.BOLD,
                                         size = 13
                                     ),
                                     error_text := ft.Text(
-                                        value = 'erro(s):',
+                                        value = "erro(s):",
                                         weight = ft.FontWeight.W_300,
                                         size = 13
                                     ),
                                     downloaded_text := ft.Text(
-                                        value = 'baixados: 0/0  |  0%',
+                                        value = "baixados: 0/0  |  0%",
                                         weight = ft.FontWeight.W_300,
                                         size = 13
                                     )
@@ -411,7 +430,7 @@ def main(page: ft.Page):
                         border_width = 1.5,
                         border_radius = ft.border_radius.all(15),
                         shift_enter = True,
-                        label = 'Digite ou cole a URL do Vídeo...',
+                        label = "Digite ou cole a URL do Vídeo...",
                         align_label_with_hint = True,
                         on_submit = handle_url_submit
                     ),
@@ -422,14 +441,14 @@ def main(page: ft.Page):
 
                         controls = [
                             selected_path_button := _create_text_button(
-                                text = 'Selecionar Pasta',
+                                text = "Selecionar Pasta",
                                 icon = ft.Icons.FOLDER_COPY_ROUNDED,
                                 on_click = open_selector,
                                 color = "#6c3aed",
                                 secundary_color = "#8b5cf6"
                             ),
                             download_music_button := _create_text_button(
-                                text = 'Baixar Música',
+                                text = "Baixar Música",
                                 icon = ft.Icons.FILE_DOWNLOAD_OUTLINED,
                                 on_click = download_music,
                                 color = "#ff8c00",
@@ -446,15 +465,15 @@ def main(page: ft.Page):
                         
                         controls = [
                             selected_directory_text := ft.Text(
-                                value = 'Nenhum diretório selecionado',
+                                value = "Nenhum diretório selecionado",
                                 color = "#ededf1",
-                                col = {'xs' : 12, 'sm' : 6},
+                                col = {"xs" : 12, "sm" : 6},
                                 text_align = ft.TextAlign.LEFT
                             ),
                             directory_download_text := ft.Text(
-                                value = f'Assets/Download/...',
+                                value = f"Assets/Download/...",
                                 color = "#ededf1",
-                                col = {'xs' : 12, 'sm' : 6},
+                                col = {"xs" : 12, "sm" : 6},
                                 text_align = ft.TextAlign.RIGHT
                             )
                         ]
@@ -467,5 +486,5 @@ def main(page: ft.Page):
 
 ft.app(
     target = main,
-    assets_dir = 'assets'
+    assets_dir = "assets"
 )
