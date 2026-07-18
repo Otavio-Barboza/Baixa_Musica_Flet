@@ -1,7 +1,14 @@
-from assets.core.controller_download import ControllerDownload
-from assets.core.download import download
+# import de back-end
+from core.download.controller.controller_download import ControllerDownload
+from core.download.model.download import download
+from core.utils.path import AppPaths
+from core.settings.settings_manager import SettingsManager
+
+# imports gerais
+from pathlib import Path
 import os, sys
 import flet as ft
+
 
 # forçando o sistema operacional usar do encoding utf-8, para suprir a necessidade de visibilidade de emojis ou outros caracteres especiais.
 os.environ["PYTHONUTF8"] = "1"
@@ -32,6 +39,44 @@ def main(page: ft.Page):
     )
     page.bgcolor = "#121219"
 
+    
+    # validando localappdata
+    if not AppPaths.BAIXA_MUSICA.exists():
+        AppPaths.BAIXA_MUSICA.mkdir(parents = True, exist_ok = True)
+
+    if not AppPaths.JSON_SETTINGS.exists():
+        SettingsManager.save_json(True)
+        SettingsManager.update_is_active()
+    else:
+        SettingsManager.update_is_active()
+
+
+    # overlay_settings de configurações
+    def open_settings(event):
+        page.overlay.append(overlay_settings)
+        page.update()
+
+    def close_settings(event):
+        page.overlay.remove(overlay_settings)
+        page.update()
+
+    def change_switch(change_event):
+        print(change_event.data)
+
+        if change_event.data == "true":
+            SettingsManager.set_is_active_name_link(True)
+        else:
+            SettingsManager.set_is_active_name_link(False)
+
+        SettingsManager.save_json()
+
+    def open_information_download_link(event):
+        page.open(alert_information_download_link)
+        page.update()
+    
+    def close_information_download_link(event):
+        alert_information_download_link.open = False
+        page.update()
 
     # Event Handlers (Manipuladores de Eventos) - funções que correspondem a um evento.
     def handle_url_submit(event):
@@ -169,6 +214,11 @@ def main(page: ft.Page):
             )
         )
     
+    def validate_name_link(url: str) -> str:
+        if SettingsManager.return_is_active_name_link():
+            return ControllerDownload.return_title_video(url)
+        return url
+    
     def _create_download_container(url: str) -> ft.Container:
         return ft.Container(
             height = 60,
@@ -202,7 +252,7 @@ def main(page: ft.Page):
 
                         controls = [
                             ft.Text(
-                                value = ControllerDownload.return_title_video(url),
+                                value = validate_name_link(url),
                                 size = 16,
                                 color = "#ededf1",
                                 max_lines = 1,
@@ -319,7 +369,7 @@ def main(page: ft.Page):
             )
         )
 
-    # Overlay e resize
+    # overlay_settings e resize
     page.overlay.append(picker)
     page.on_resized = handle_resize
 
@@ -356,6 +406,171 @@ def main(page: ft.Page):
     ControllerDownload.register_callback(
         event = "path_download_saved",
         callback = update_directory_download_save
+    )
+
+
+    overlay_settings = ft.Container(
+        expand = True,
+        alignment = ft.alignment.center,
+        bgcolor = ft.Colors.with_opacity(
+            opacity = 0.75,
+            color = ft.Colors.BLACK38
+        ),
+        content = ft.Container(
+            width = 600,
+            height = 600,
+            bgcolor = "#121219",
+            border_radius = ft.border_radius.all(20),
+            border = ft.Border(
+                top = ft.BorderSide(
+                    width = 1.5,
+                    color = ft.Colors.GREY_600
+                ),
+                bottom = ft.BorderSide(
+                    width = 1.5,
+                    color = ft.Colors.GREY_600
+                ),
+                left = ft.BorderSide(
+                    width = 1.5,
+                    color = ft.Colors.GREY_600
+                ),
+                right = ft.BorderSide(
+                    width = 1.5,
+                    color = ft.Colors.GREY_600
+                )
+            ),
+
+            content = ft.Column(
+                controls = [
+                    ft.Container(
+                        height = 75,
+                        bgcolor = ft.Colors.with_opacity(
+                            opacity = 0.4,
+                            color = ft.Colors.BLACK38
+                        ),
+                        padding = ft.padding.only(
+                            left = 20,
+                            right = 20,
+                            top = 10,
+                            bottom = 10
+                        ),
+
+                        content = ft.Row(
+                            alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+
+                            controls = [
+                                ft.Text(
+                                    value = "Configurações do aplicativo",
+                                    size = 24
+                                ),
+                                ft.IconButton(
+                                    icon = ft.Icons.CLOSE,
+                                    style = ft.ButtonStyle(
+                                        color = {
+                                            ft.ControlState.DEFAULT : "#ff8c00",
+                                            ft.ControlState.HOVERED : "#6c3aed",
+                                        },
+                                        overlay_color = ft.Colors.with_opacity(
+                                            opacity = 0.9,
+                                            color = "#f9f9f9"
+                                        )
+                                    ),
+                                    on_click = close_settings
+                                )
+                            ]
+                        ),
+                    ),
+
+                    ft.Container(
+                        padding = ft.padding.only(
+                            left = 20,
+                            top = 10,
+                            right = 10,
+                            bottom = 10
+                        ),
+                        content = ft.Column(
+                            horizontal_alignment = ft.CrossAxisAlignment.CENTER,
+                            alignment = ft.MainAxisAlignment.START,
+                            spacing = 15,
+
+                            controls = [
+                                ft.Row(
+                                    controls = [
+                                        ft.Switch(
+                                            on_change = change_switch,
+                                            active_track_color = "#ff8c00",
+                                            active_color = "#6c3aed",
+                                            overlay_color = ft.Colors.TRANSPARENT,
+                                            value = SettingsManager.return_is_active_name_link()
+                                        ),
+                                        ft.Text(
+                                            value = "Mostar nome dos links de download",
+                                            size = 18
+                                        ),
+                                        ft.IconButton(
+                                            icon = ft.Icons.INFO,
+                                            style = ft.ButtonStyle(
+                                                icon_size = 16,
+                                                color = "#f9f9f9",
+                                            ),
+                                            on_click = open_information_download_link
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+    )
+    alert_information_download_link = ft.AlertDialog(
+        title = ft.Text(
+            value = "Como funciona?",
+            weight = ft.FontWeight.BOLD
+        ),
+        content = ft.Text(
+            value = "Ao desativar essa funcionalidade, \no titulo do link inserido não será exibido, \naparecendo apenas o link. \nÉ recomendado desativá-la em \ngrandes quantidades de downloads, \nevitando bloqueios mais rápidos.",
+            size = 14
+        ),
+        actions = [
+            ft.TextButton(
+                text = "Sair",
+                style = ft.ButtonStyle(
+                    bgcolor = {
+                        ft.ControlState.DEFAULT : "#121219",
+                        ft.ControlState.HOVERED : "#f9f9f9"
+                    },
+                    color = {
+                        ft.ControlState.HOVERED : "#121219",
+                        ft.ControlState.DEFAULT : "#f9f9f9"
+                    },
+                    text_style = ft.TextStyle(
+                        weight = ft.FontWeight.BOLD
+                    )
+                ),
+                on_click = close_information_download_link
+            ) 
+        ],
+        actions_alignment = ft.MainAxisAlignment.CENTER
+    )
+
+    page.appbar = ft.AppBar(    
+        title = ft.Text(
+            value = "Baixa Música"
+        ),
+        leading_width = 40,
+        bgcolor = ft.Colors.with_opacity(
+            opacity = 0.4,
+            color = ft.Colors.BLACK38
+        ),
+
+        actions = [
+            ft.IconButton(
+                icon = ft.Icons.SETTINGS_OUTLINED,
+                on_click = open_settings
+            )
+        ]
     )
 
     page.add(

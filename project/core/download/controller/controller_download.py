@@ -1,5 +1,5 @@
-from .cache_download import CacheDownload
-from .queue_download import download_queue
+from core.download.cache.cache_download import CacheDownload
+from core.download.queue.queue_download import download_queue
 
 class ControllerDownload:
 
@@ -71,5 +71,5 @@ class ControllerDownload:
 
     @classmethod
     def return_title_video(cls, url: str) -> str:
-        from .download import download
+        from core.download.model.download import download
         return download.return_title_video(url)

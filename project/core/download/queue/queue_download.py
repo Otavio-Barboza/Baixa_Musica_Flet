@@ -49,8 +49,8 @@ class DownloadQueue:
 
     # Comandos e controle do download
     def start(self):
-        from .controller_download import ControllerDownload
-        from .download import download
+        from ..controller.controller_download import ControllerDownload
+        from ..model.download import download
 
         if len(self._queue) == 0:
             ControllerDownload.notify_callback(
@@ -125,7 +125,7 @@ class DownloadQueue:
             self.next()
 
     def stop(self):
-        from .controller_download import ControllerDownload
+        from ..controller.controller_download import ControllerDownload
         
         self.set_is_running(False)
         
@@ -135,7 +135,7 @@ class DownloadQueue:
         )
     
     def next(self):
-        from .controller_download import ControllerDownload
+        from ..controller.controller_download import ControllerDownload
 
         if len(self._queue) == 0:
             return

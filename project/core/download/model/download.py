@@ -4,7 +4,7 @@ import os
 
 class Download:
     def __init__(self):
-        self._FFMPEG_PATH = Path(__file__).resolve().parent.parent / "ffmpeg"
+        self._FFMPEG_PATH = Path(__file__).resolve().parents[3] / "assets" / "ffmpeg"
         self._path = None
 
     # Utilidades dos métodos internos da classe
@@ -28,7 +28,7 @@ class Download:
             str: Texto informativo referente à conclusão ou erro no download do MP3.
         """
 
-        from .controller_download import ControllerDownload
+        from project.core.download.controller.controller_download import ControllerDownload
 
         if self._path is None:
             return
@@ -99,3 +99,4 @@ class Download:
         return info["title"]
 
 download = Download()
+print(download._FFMPEG_PATH)
