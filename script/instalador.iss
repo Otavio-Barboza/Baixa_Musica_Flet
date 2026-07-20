@@ -1,12 +1,12 @@
 [Setup]
 AppId={{A8F69B62-8F1A-4A76-BD91-123456789ABC}
 AppName=Baixa Musica
-AppVersion=1.2.1
-AppPublisher=Otavio
+AppVersion=1.3.0
+AppPublisher=Baixa Music
 DefaultDirName={autopf}\Baixa Musica
 DefaultGroupName=Baixa Musica
 OutputDir=..\Release\Windows
-OutputBaseFilename=BaixaMusicaSetup v(1.2.1)
+OutputBaseFilename=BaixaMusicaSetup v(1.3.0)
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
