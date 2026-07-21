@@ -28,7 +28,7 @@ class Download:
             str: Texto informativo referente à conclusão ou erro no download do MP3.
         """
 
-        from project.core.download.controller.controller_download import ControllerDownload
+        from core.download.controller.controller_download import ControllerDownload
 
         if self._path is None:
             return

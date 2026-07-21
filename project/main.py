@@ -494,7 +494,7 @@ def main(page: ft.Page):
                             spacing = 15,
 
                             controls = [
-                                ft.Row(
+                                ft.Row( 
                                     controls = [
                                         ft.Switch(
                                             on_change = change_switch,
