@@ -72,7 +72,7 @@ class Download:
                     data = f"Salvo em: {mp3_name}"
                 )
                 return True
-            else:
+            else:   
                 ControllerDownload.notify_callback(
                     event = "snack_bar_information",
                     data = f"erro no download: {mp3_name}, tente novamente!"
