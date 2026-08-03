@@ -1,7 +1,7 @@
 [Setup]
 AppId={{A8F69B62-8F1A-4A76-BD91-123456789ABC}
 AppName=Baixa Musica
-AppVersion=1.3.0
+AppVersion=1.3.1
 AppPublisher=Barboza Software
 DefaultDirName={autopf}\Baixa Musica
 DefaultGroupName=Baixa Musica
